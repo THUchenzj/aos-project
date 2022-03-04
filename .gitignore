@@ -6,6 +6,7 @@ target
 user/build
 user/target
 link_app.S
+kernel_app.ld
 *.o
 *.d
 *.asm
