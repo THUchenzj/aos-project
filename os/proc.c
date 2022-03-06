@@ -3,6 +3,10 @@
 #include "loader.h"
 #include "trap.h"
 
+/*task_info*/
+#include "timer.h"
+#include "task_info.h"
+
 struct proc pool[NPROC];
 char kstack[NPROC][PAGE_SIZE];
 __attribute__((aligned(4096))) char ustack[NPROC][PAGE_SIZE];
@@ -78,6 +82,13 @@ void scheduler(void)
 	for (;;) {
 		for (p = pool; p < &pool[NPROC]; p++) {
 			if (p->state == RUNNABLE) {
+				/*start_time*/
+				uint64 cycle = get_cycle();
+				uint64 sec = cycle / CPU_FREQ;
+				uint64 usec = (cycle % CPU_FREQ) * 1000000 / CPU_FREQ;
+				if(!p->start_time)
+					p->start_time = sec*1000+usec/1000;
+
 				p->state = RUNNING;
 				current_proc = p;
 				swtch(&idle.context, &p->context);
