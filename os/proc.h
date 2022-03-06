@@ -36,7 +36,7 @@ struct proc {
 	struct trapframe *trapframe; // data page for trampoline.S
 	struct context context; // swtch() here to run process
 	#define MAX_SYSCALL_NUM 500
-	unsigned int global_syscall_times[MAX_SYSCALL_NUM];
+	unsigned int proc_syscall_times[MAX_SYSCALL_NUM];
 	uint64 start_time;
 };
 

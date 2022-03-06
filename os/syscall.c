@@ -50,7 +50,7 @@ uint64 sys_task_info(TaskInfo *ti)
 	ti->status = Running;//always running
 	// 系统调用计数
 	for(int i=0;i<MAX_SYSCALL_NUM;i++)
-		ti->syscall_times[i] = curr_proc()->global_syscall_times[i];
+		ti->syscall_times[i] = curr_proc()->proc_syscall_times[i];
 	return 0;
 }
 uint64 sys_getpid()
@@ -70,28 +70,28 @@ void syscall()
 	       args[1], args[2], args[3], args[4], args[5]);
 	switch (id) {
 	case SYS_write:
-		curr_proc()->global_syscall_times[SYS_write]++;
+		curr_proc()->proc_syscall_times[SYS_write]++;
 		ret = sys_write(args[0], (char *)args[1], args[2]);
 		break;
 	case SYS_exit:
-		curr_proc()->global_syscall_times[SYS_exit]++;
+		curr_proc()->proc_syscall_times[SYS_exit]++;
 		sys_exit(args[0]);
 		// __builtin_unreachable();
 	case SYS_sched_yield:
-		curr_proc()->global_syscall_times[SYS_sched_yield]++;
+		curr_proc()->proc_syscall_times[SYS_sched_yield]++;
 		ret = sys_sched_yield();
 		break;
 	case SYS_gettimeofday:
-		curr_proc()->global_syscall_times[SYS_gettimeofday]++;
+		curr_proc()->proc_syscall_times[SYS_gettimeofday]++;
 		ret = sys_gettimeofday((TimeVal *)args[0], args[1]);
 		break;
 	// add sys_task_info syscall
 	case SYS_task_info:
-		curr_proc()->global_syscall_times[SYS_task_info]++;
+		curr_proc()->proc_syscall_times[SYS_task_info]++;
 		ret = sys_task_info((TaskInfo *)args[0]);
 		break;
 	case SYS_getpid:
-		curr_proc()->global_syscall_times[SYS_getpid]++;
+		curr_proc()->proc_syscall_times[SYS_getpid]++;
 		ret = sys_getpid();
 		break;
 	default:
