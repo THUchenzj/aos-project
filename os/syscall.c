@@ -112,7 +112,7 @@ uint64 check_remap(pagetable_t pagetable,uint64 va,uint64 size)
 	return 0;
 }
 /**
- * @brief alloc memory start from start, and length is len.
+ * @brief alloc memory from virtuall address start, and length is len.
  * 
  * @param start 
  * @param len 
@@ -177,7 +177,9 @@ uint64 sys_mmap(void* start, unsigned long long len, int port, int flag, int fd)
 		}
 		va += PGSIZE;
 	}
-
+	/*Attention !!! max_page!!!*/
+	curr_proc()->max_page += page_num;
+	
 	return 0;
 }
 uint64 sys_munmap(void *start, unsigned long long len)
@@ -216,6 +218,8 @@ uint64 sys_munmap(void *start, unsigned long long len)
 		uvmunmap(pg,va,1,do_free);
 		va+=PGSIZE;
 	}
+	/*Attention !!! max_page!!!*/
+	curr_proc()->max_page -= page_num;
 	return 0;
 }
 
