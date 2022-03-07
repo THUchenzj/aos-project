@@ -151,6 +151,12 @@ uint64 sys_mmap(void* start, unsigned long long len, int port, int flag, int fd)
 		}
 		va += PGSIZE;
 	}
+	/*Attention !!! max_page!!!*/
+	if(va > curr_proc()->max_va)
+	{
+		curr_proc()->max_va = va; 
+		curr_proc()->max_page = PGROUNDUP(curr_proc()->max_va)/PGSIZE;
+	}
 
 	return 0;
 }
@@ -190,6 +196,10 @@ uint64 sys_munmap(void *start, unsigned long long len)
 		uvmunmap(pg,va,1,do_free);
 		va+=PGSIZE;
 	}
+	/*Attention !!! max_page!!!*/
+	uint64 init_va = (uint64)start;
+	if( va >= curr_proc()->max_va)
+		curr_proc()->max_page = PGROUNDUP(init_va) / PAGE_SIZE;
 	return 0;
 }
 

@@ -38,6 +38,7 @@ struct proc {
 	struct trapframe *trapframe; // data page for trampoline.S
 	struct context context; // swtch() here to run process
 	uint64 max_page;
+	uint64 max_va;
 };
 
 struct proc *curr_proc();
