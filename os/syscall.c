@@ -197,7 +197,7 @@ uint64 sys_munmap(void *start, unsigned long long len)
 	{
 		return -1;
 	}
-	/**
+	/** 
 	 * @brief verify len:[0,1G)
 	 * 
 	 */
@@ -229,6 +229,24 @@ uint64 sys_munmap(void *start, unsigned long long len)
 
 	return 0;
 }
+uint64 sys_spawn(uint64 va)
+{
+	struct proc *p = curr_proc();
+	char name[200];
+	copyinstr(p->pagetable, name, va, 200);
+	//debugf("sys_exec %s\n", name);
+	return spawn(name);
+}
+uint64 sys_setpriority(long long prio)
+{
+	if(prio < 2 || prio > MAX_PRIO)
+		return -1;
+	struct proc *p = curr_proc();
+	p->prio = prio;
+	return prio;
+}
+
+
 
 extern char trap_page[];
 
@@ -277,6 +295,12 @@ void syscall()
 		break;
 	case SYS_munmap:
 		ret = sys_munmap((void *)args[0], args[1]);
+		break;
+	case SYS_spawn:
+		ret = sys_spawn(args[0]);
+		break;
+	case SYS_setpriority:
+		ret = sys_setpriority(args[0]);
 		break;
 	default:
 		ret = -1;

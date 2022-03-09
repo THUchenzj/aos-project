@@ -7,6 +7,9 @@
 
 #define NPROC (512)
 #define FD_BUFFER_SIZE (16)
+#define INT_MAX (0x7fffffff)
+#define MAX_PRIO INT_MAX
+extern const Stride_t BIG_STRIDE;
 
 struct file;
 
@@ -46,6 +49,8 @@ struct proc {
 	uint64 exit_code;
 	struct file *files[FD_BUFFER_SIZE];
 	uint64 max_va;
+	uint64 prio;
+	Stride_t stride;
 };
 
 int cpuid();
@@ -56,6 +61,7 @@ void scheduler() __attribute__((noreturn));
 void sched();
 void yield();
 int fork();
+int spawn(char *);
 int exec(char *);
 int wait(int, int *);
 void add_task(struct proc *);

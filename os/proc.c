@@ -13,6 +13,7 @@ extern char boot_stack_top[];
 struct proc *current_proc;
 struct proc idle;
 struct queue task_queue;
+const Stride_t BIG_STRIDE = 65536;
 
 int threadid()
 {
@@ -32,6 +33,8 @@ void proc_init()
 		p->state = UNUSED;
 		p->kstack = (uint64)kstack[p - pool];
 		p->trapframe = (struct trapframe *)trapframe[p - pool];
+		p->prio = 16;
+		p->stride = 0;
 	}
 	idle.kstack = (uint64)boot_stack_top;
 	idle.pid = IDLE_PID;
@@ -47,19 +50,25 @@ int allocpid()
 
 struct proc *fetch_task()
 {
-	int index = pop_queue(&task_queue);
+	// int index = pop_queue(&task_queue);
+	/**
+	 * @brief find the smallest stride proc
+	 * 
+	 */
+	//debugf("front %d tail %d\n", task_queue.front,task_queue.tail);
+	int index = stride(&task_queue, pool);
 	if (index < 0) {
 		debugf("No task to fetch\n");
 		return NULL;
 	}
-	debugf("fetch task %d(pid=%d) to task queue\n", index, pool[index].pid);
+	//debugf("fetch task %d(pid=%d) to task queue front %d tail %d\n", index, pool[index].pid,task_queue.front,task_queue.tail);
 	return pool + index;
 }
 
 void add_task(struct proc *p)
 {
 	push_queue(&task_queue, p - pool);
-	debugf("add task %d(pid=%d) to task queue\n", p - pool, p->pid);
+	//debugf("add task %d(pid=%d) to task queue\n", p - pool, p->pid);
 }
 
 // Look in the process table for an UNUSED proc.
@@ -120,6 +129,9 @@ void scheduler()
 		}
 		tracef("swtich to proc %d", p - pool);
 		p->state = RUNNING;
+		//debugf("%d",p->stride);
+		p->stride += BIG_STRIDE/p->prio;
+		//debugf("%d %d",p->stride,p->pid);
 		current_proc = p;
 		swtch(&idle.context, &p->context);
 	}
@@ -250,4 +262,27 @@ void exit(int code)
 		}
 	}
 	sched();
+}
+
+int spawn(char *name)
+{
+	struct proc *p = curr_proc();
+	int id = get_id_by_name(name);
+	if(id < 0)
+		return -1;
+	struct proc *np;
+	// Allocate process.
+	if ((np = allocproc()) == 0) {
+		return -1;
+	}
+	// Cause fork to return 0 in the child.
+	*(np->trapframe) = *(p->trapframe);
+	np->trapframe->a0 = 0;
+	np->parent = p;
+	loader(id,np);
+	np->state = RUNNABLE;
+	add_task(np);
+	//debugf("%d",np->pid);
+	return np->pid;
+	
 }
