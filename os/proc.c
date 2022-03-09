@@ -124,9 +124,7 @@ void scheduler()
 		}
 		tracef("swtich to proc %d", p - pool);
 		p->state = RUNNING;
-		//debugf("%d",p->stride);
 		p->stride += BIG_STRIDE/p->prio;
-		//debugf("%d %d",p->stride,p->pid);
 		current_proc = p;
 		swtch(&idle.context, &p->context);
 	}
