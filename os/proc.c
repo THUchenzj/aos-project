@@ -51,11 +51,6 @@ int allocpid()
 struct proc *fetch_task()
 {
 	// int index = pop_queue(&task_queue);
-	/**
-	 * @brief find the smallest stride proc
-	 * 
-	 */
-	//debugf("front %d tail %d\n", task_queue.front,task_queue.tail);
 	int index = stride(&task_queue, pool);
 	if (index < 0) {
 		debugf("No task to fetch\n");

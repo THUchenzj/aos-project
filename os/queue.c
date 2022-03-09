@@ -37,7 +37,6 @@ int stride(struct queue *q, struct proc *pool)
 	{
 		
 		int v = (pool+q->data[i])->stride;
-		//if(pid == 1)continue;
 		if(v < val)
 		{
 			ptr = i;
