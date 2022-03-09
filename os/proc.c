@@ -47,7 +47,7 @@ int allocpid()
 	static int PID = 1;
 	return PID++;
 }
-
+static int count = 0;
 struct proc *fetch_task()
 {
 	// int index = pop_queue(&task_queue);
@@ -124,7 +124,7 @@ void scheduler()
 		}
 		tracef("swtich to proc %d", p - pool);
 		p->state = RUNNING;
-		p->stride += BIG_STRIDE/p->prio;
+		p->stride += (Stride_t)(BIG_STRIDE/p->prio);
 		current_proc = p;
 		swtch(&idle.context, &p->context);
 	}
