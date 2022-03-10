@@ -27,17 +27,36 @@ int pop_queue(struct queue *q)
 	return value;
 }
 
-int stride(struct queue *q, struct proc *pool)
+int cmp(Stride_t a, Stride_t b) {
+    // YOUR CODE HERE
+    // return 1 if a > b
+    // return -1 if a < b
+    // return 0 if a == b
+    if((long long)(a-b) < 0)
+        return -1;
+    else if((long long)(a-b) > 0)
+        return 1;
+    return 0;
+}
+
+/**
+ * @brief brute force
+ * 
+ * @param q 
+ * @param pool 
+ * @return int 
+ */
+int pick_next(struct queue *q, struct proc *pool)
 {
 	if(q->empty)
 		return -1;
-	int val = INT_MAX;
+	int val = BIG_STRIDE;
 	int ptr = -1;
 	for(int i = q->front;i<q->tail;i = (i+1)%NPROC)
 	{
 		
 		int v = (pool+q->data[i])->stride;
-		if(v < val)
+		if(cmp(v,val) == -1)
 		{
 			ptr = i;
 			val = v;

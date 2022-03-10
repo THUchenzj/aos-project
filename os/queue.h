@@ -13,5 +13,5 @@ void init_queue(struct queue *);
 void push_queue(struct queue *, int);
 int pop_queue(struct queue *);
 struct proc;
-int stride(struct queue *, struct proc *);
+int pick_next(struct queue *, struct proc *);
 #endif // QUEUE_H

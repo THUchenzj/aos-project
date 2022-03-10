@@ -13,7 +13,7 @@ extern char boot_stack_top[];
 struct proc *current_proc;
 struct proc idle;
 struct queue task_queue;
-const Stride_t BIG_STRIDE = 65536;
+const Stride_t BIG_STRIDE = 0xffffffffffffffffULL;
 
 int threadid()
 {
@@ -50,7 +50,7 @@ int allocpid()
 struct proc *fetch_task()
 {
 	// int index = pop_queue(&task_queue);
-	int index = stride(&task_queue, pool);
+	int index = pick_next(&task_queue, pool);
 	if (index < 0) {
 		debugf("No task to fetch\n");
 		return NULL;
