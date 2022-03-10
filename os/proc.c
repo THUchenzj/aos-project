@@ -47,7 +47,6 @@ int allocpid()
 	static int PID = 1;
 	return PID++;
 }
-static int count = 0;
 struct proc *fetch_task()
 {
 	// int index = pop_queue(&task_queue);
@@ -74,6 +73,8 @@ struct proc *allocproc()
 	struct proc *p;
 	for (p = pool; p < &pool[NPROC]; p++) {
 		if (p->state == UNUSED) {
+			p->prio = 16;
+			p->stride = 0;
 			goto found;
 		}
 	}
